@@ -1,0 +1,4 @@
+[virtualenvs]
+create = true
+in-project = true
+virtualenvs.prompt = "{project_name}-py{python_version}"
