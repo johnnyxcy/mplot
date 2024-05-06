@@ -4,7 +4,12 @@ import "./App.css";
 import type Bokeh_ from "@bokeh/bokehjs";
 const Bokeh = window.Bokeh;
 
-function makeBokeh() {
+type MakeBokehResult = {
+    plot: Bokeh_.Plot;
+    // doc: Bokeh_.Document;
+};
+
+function makeBokeh(): MakeBokehResult | null {
     const iid = setInterval(() => {
         if (Bokeh !== undefined) {
             console.log("Bokeh is loaded");
@@ -69,11 +74,15 @@ function makeBokeh() {
         Bokeh.embed.add_document_standalone(doc, div);
     }
 
-    return plot;
+    return {
+        plot,
+        // doc,
+    };
 }
 
 function App() {
-    const p = React.useRef<Bokeh_.Plot | null>(null);
+    const p = React.useRef<MakeBokehResult | null>(null);
+    const [docJson, setDocJson] = React.useState<string>("");
     React.useEffect(() => {
         if (p.current === null) {
             p.current = makeBokeh();
@@ -84,13 +93,17 @@ function App() {
             <button
                 onClick={() => {
                     if (p.current) {
-                        console.log(p.current);
+                        console.log(p.current.plot);
+                        setDocJson(
+                            p.current.plot.document?.to_json_string() ?? ""
+                        );
                     }
                 }}
             >
                 Click Me
             </button>
             <div id="app-plot"></div>
+            {docJson && <span>{docJson}</span>}
         </div>
     );
 }
